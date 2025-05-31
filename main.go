@@ -209,10 +209,12 @@ func fetchLocationAreaPokemons(url string, config *config) (GetLocationAreaPokem
 
 func commandExplore(config *config, args []string) error {
 	if len(args) != 1 {
+		fmt.Println("explore requires a location area")
 		return fmt.Errorf("explore requires a location area")
 	}
 	location_area := args[0]
 	if location_area == "" {
+		fmt.Println("location area is required")
 		return fmt.Errorf("location area is required")	
 	}
 
@@ -553,14 +555,17 @@ func catchPokemon(pokemon_data GetPokemon) bool {
 
 func commandCatch(config *config, args []string) error {
 	if len(args) != 1 {
+		fmt.Println("catch requires a pokemon")
 		return fmt.Errorf("catch requires a pokemon")
 	}
 	pokemon := args[0]
 	if pokemon == "" {
+		fmt.Println("pokemon is required")
 		return fmt.Errorf("pokemon is required")
 	}
 
 	if _, ok := config.pokedex[pokemon]; ok {
+		fmt.Println("pokemon already in pokedex")
 		return fmt.Errorf("pokemon already in pokedex")
 	}
 
@@ -583,6 +588,39 @@ func commandCatch(config *config, args []string) error {
 
 	return nil
 }
+
+func commandInspect(config *config, args []string) error {
+	if len(args) != 1 {
+		fmt.Println("inspect requires a pokemon")
+		return fmt.Errorf("inspect requires a pokemon")
+	}
+	pokemon := args[0]
+	if pokemon == "" {
+		fmt.Println("pokemon is required")
+		return fmt.Errorf("pokemon is required")
+	}
+
+	if _, ok := config.pokedex[pokemon]; !ok {
+		fmt.Println("you have not caught that pokemon")
+		return fmt.Errorf("you have not caught that pokemon")
+	}
+
+	fmt.Printf("Name: %v\n", config.pokedex[pokemon].Name)
+	fmt.Printf("Height: %v\n", config.pokedex[pokemon].Height)
+	fmt.Printf("Weight: %v\n", config.pokedex[pokemon].Weight)
+
+	fmt.Printf("Stats: \n")
+	for _, stat := range config.pokedex[pokemon].Stats {
+		fmt.Printf("  -%v: %v\n", stat.Stat.Name, stat.BaseStat)
+	}
+
+	fmt.Printf("Types: \n")
+	for _, type_ := range config.pokedex[pokemon].Types {
+		fmt.Printf("  - %v\n", type_.Type.Name)
+	}
+	
+	return nil
+}	
 
 type cliCommand struct {
 	name        string
@@ -628,6 +666,11 @@ var commands = map[string]cliCommand{
 		name:        "catch",
 		description: "Catch a pokemon",
 		callback:    commandCatch,
+	},
+	"inspect": {
+		name:        "inspect",
+		description: "Inspect a pokemon",
+		callback:    commandInspect,
 	},
 }
 
