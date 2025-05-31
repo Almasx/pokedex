@@ -37,6 +37,12 @@ func commandHelp(config *config, args []string) error {
 	fmt.Println("")
 	fmt.Println("help - Displays a help message")
 	fmt.Println("exit - Exit the Pokedex")
+	fmt.Println("map - Show the map of the Pokemon world")
+	fmt.Println("mapb - Show the previous page of the map")
+	fmt.Println("explore <location_area> - Explore a location area")
+	fmt.Println("catch <pokemon> - Catch a pokemon")
+	fmt.Println("inspect <pokemon> - Inspect a pokemon")
+	fmt.Println("pokedex - Show the pokedex")
 	return nil
 }
 
@@ -581,6 +587,7 @@ func commandCatch(config *config, args []string) error {
 	caught := catchPokemon(pokemon_data)
 	if caught {
 		fmt.Println( pokemon, "was caught!")
+		fmt.Println("You may now inspect it with the inspect command.")
 		config.pokedex[pokemon] = pokemon_data
 	} else {
 		fmt.Println( pokemon, "escaped!")
@@ -621,6 +628,14 @@ func commandInspect(config *config, args []string) error {
 	
 	return nil
 }	
+
+func commandPokedex(config *config, args []string) error {	
+	fmt.Println("Your Pokedex:")
+	for _, pokemon := range config.pokedex {
+		fmt.Printf("  - %v\n", pokemon.Name)
+	}
+	return nil
+}
 
 type cliCommand struct {
 	name        string
@@ -671,6 +686,11 @@ var commands = map[string]cliCommand{
 		name:        "inspect",
 		description: "Inspect a pokemon",
 		callback:    commandInspect,
+	},
+	"pokedex": {
+		name:        "pokedex",
+		description: "Show the pokedex",
+		callback:    commandPokedex,
 	},
 }
 
